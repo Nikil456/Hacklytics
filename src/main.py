@@ -726,6 +726,8 @@ def show_home_page():
     .home-globe-marker ~ [data-testid="element-container"] iframe,
     [data-testid="element-container"]:has(iframe[srcdoc*="globeViz"]) iframe {
         opacity: 0.6 !important; width: 100% !important; height: 100% !important; }
+    [data-testid="element-container"]:has(iframe[height="0"]) {
+        display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
     </style>
     <div class="home-globe-marker"></div>
     ''', unsafe_allow_html=True)
