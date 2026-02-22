@@ -746,6 +746,14 @@ div.{wrapper_class} button:hover * {{
     color: {nav_accent} !important;
     border: 0px solid transparent !important;
 }}
+
+/* Hide zero-height iframe containers that cause extra spacing above nav */
+[data-testid="element-container"]:has(iframe[height="0"]) {{
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}}
 </style>
 """
 
