@@ -339,28 +339,38 @@ def render_analytics_page():
                 <p style="color:#ef4444; font-family:'Courier New',monospace; font-size:0.68rem;
                           letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.5rem 0;">01 — Overlooked Crises</p>
                 <p style="color:#94a3b8; font-size:0.9rem; line-height:1.7; margin:0;">
-                    Countries like <span style="color:#e2e8f0; font-weight:500;">Sudan</span> and
-                    <span style="color:#e2e8f0; font-weight:500;">Afghanistan</span>
-                    fall into the Critical bracket yet receive disproportionately low funding per person compared to global norms.
+                    <span style="color:#e2e8f0; font-weight:500;">Sudan</span> holds the highest Mismatch Score
+                    (0.59) — 64% of its 47.5M population is in need, yet the humanitarian budget amounts to just
+                    <span style="color:#e2e8f0; font-weight:500;">~$1,342 per person</span>.
+                    <span style="color:#e2e8f0; font-weight:500;">Afghanistan</span> follows at 0.53:
+                    57% of its population requires assistance with only ~$1,174 budgeted per person in need —
+                    the lowest Budget per PIN of any Critical-tier country.
                 </p>
             </div>
             <div style="background:rgba(15,23,42,0.5); border:1px solid rgba(148,163,184,0.08);
                         border-left:2px solid rgba(245,158,11,0.5); border-radius:5px; padding:1rem 1.1rem;">
                 <p style="color:#f59e0b; font-family:'Courier New',monospace; font-size:0.68rem;
-                          letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.5rem 0;">02 — Structural Inequity</p>
+                          letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.5rem 0;">02 — Targeting Efficiency Gap</p>
                 <p style="color:#94a3b8; font-size:0.9rem; line-height:1.7; margin:0;">
-                    Critical severity crises often receive
-                    <span style="color:#e2e8f0; font-weight:500;">less funding per person ($300 median)</span>
-                    than Low severity crises ($493 median), suggesting aid does not always follow the deepest needs.
+                    <span style="color:#e2e8f0; font-weight:500;">Colombia</span> is the most undertargeted
+                    country in the dataset — response plans reach only
+                    <span style="color:#e2e8f0; font-weight:500;">22% of the 9M people in need</span>,
+                    leaving 7.1M without a targeting commitment. DRC similarly targets just 51.7% of
+                    its 21.2M caseload. Both countries show that scale of need alone does not guarantee
+                    proportional operational coverage.
                 </p>
             </div>
             <div style="background:rgba(15,23,42,0.5); border:1px solid rgba(148,163,184,0.08);
                         border-left:2px solid rgba(59,130,246,0.5); border-radius:5px; padding:1rem 1.1rem;">
                 <p style="color:#3b82f6; font-family:'Courier New',monospace; font-size:0.68rem;
-                          letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.5rem 0;">03 — Sectoral Gaps</p>
+                          letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.5rem 0;">03 — Funding Paradox</p>
                 <p style="color:#94a3b8; font-size:0.9rem; line-height:1.7; margin:0;">
-                    While Food Security targets over <span style="color:#e2e8f0; font-weight:500;">55% of people in need</span>,
-                    the Protection sector — despite the highest global burden — reaches less than 31%.
+                    <span style="color:#e2e8f0; font-weight:500;">Somalia</span> — a Critical-severity crisis —
+                    receives <span style="color:#e2e8f0; font-weight:500;">~$4,287 per person in need</span>,
+                    more than any other country in the dataset. Meanwhile
+                    <span style="color:#e2e8f0; font-weight:500;">Guatemala</span>, rated Low severity,
+                    receives just ~$335 per PIN. This inversion signals that funding decisions are
+                    driven partly by geopolitical visibility rather than the depth of humanitarian need alone.
                 </p>
             </div>
         </div>

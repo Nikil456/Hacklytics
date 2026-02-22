@@ -754,17 +754,24 @@ def show_dashboard_page():
 
         entities       = generate_sample_entities()
         total_entities = len(entities)
+        sev_dot = {5: '#ef4444', 4: '#f59e0b', 3: '#3b82f6', 2: '#4ade80'}
         entity_items_html = ""
         for _, entity in entities.iterrows():
-            entity_items_html += f'''<div class="entity-item">
-                <span class="entity-name">{entity['name']}</span>
-                <span class="entity-badge">{entity['projects']}</span>
-            </div>'''
+            dot_color = sev_dot.get(entity['severity'], '#64748b')
+            entity_items_html += (
+                f'<div class="entity-item">'
+                f'<span class="entity-name" style="display:flex;align-items:center;gap:0.5rem;">'
+                f'<span style="width:7px;height:7px;border-radius:50%;background:{dot_color};'
+                f'flex-shrink:0;display:inline-block;"></span>'
+                f'{entity["name"]}</span>'
+                f'<span class="entity-badge">{entity["in_need"]}</span>'
+                f'</div>'
+            )
 
         st.markdown(f'''<div class="entity-list">
             <div class="entity-header">
                 <span class="entity-count">{total_entities} CRISIS REGIONS</span>
-                <span class="sort-dropdown">A-Z ▼</span>
+                <span class="sort-dropdown">SEVERITY ▼</span>
             </div>
             {entity_items_html}
         </div>''', unsafe_allow_html=True)
