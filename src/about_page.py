@@ -1,14 +1,14 @@
 import streamlit.components.v1 as components
 
-from styles import ABOUT_CSS
+from styles import get_about_css
 
 
-def render_about_page():
+def render_about_page(theme_colors):
     about_html = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<style>{ABOUT_CSS}</style>
+<style>{get_about_css(theme_colors)}</style>
 </head>
 <body>
 <div class="page">

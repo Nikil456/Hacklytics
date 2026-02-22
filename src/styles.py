@@ -6,7 +6,7 @@ def get_theme_colors(theme):
     """Get color scheme based on current theme"""
     if theme == 'dark':
         return {
-            'app_bg': '#0a0e1a',
+            'app_bg': '#060911',
             'primary_text': '#ffffff',
             'secondary_text': '#9ca3af',
             'tertiary_text': '#64748b',
@@ -587,13 +587,13 @@ def get_main_css(theme_colors):
 """
 
 
-def get_nav_css(theme, wrapper_class='nav-wrapper'):
+def get_nav_css(theme, wrapper_class='nav-wrapper', app_bg=None):
     """Generate navigation bar CSS with theme support"""
     if theme == 'dark':
         nav_text = '#9ca3af'
         nav_accent = '#00ff41'
         nav_hover = '#00ff41'
-        nav_bg = '#0a0e1a'
+        nav_bg = app_bg or '#060911'
     else:
         nav_text = '#475569'
         nav_accent = '#2563eb'
@@ -761,12 +761,15 @@ div.{wrapper_class} button:hover * {{
 def get_globe_button_css(theme_colors):
     """Generate theme-aware CSS for globe view controls, legend, and tooltips"""
     
+    # Use dark variants for any non-white background (dark mode)
+    _is_dark = theme_colors['app_bg'] != '#ffffff'
+
     # Background colors for glass effect
-    bg_glass = 'rgba(10,14,26,0.75)' if theme_colors['app_bg'] == '#0a0e1a' else 'rgba(241,245,249,0.9)'
-    bg_tooltip = 'rgba(10,14,26,0.9)' if theme_colors['app_bg'] == '#0a0e1a' else 'rgba(255,255,255,0.95)'
-    
+    bg_glass   = 'rgba(6,9,17,0.75)'    if _is_dark else 'rgba(241,245,249,0.9)'
+    bg_tooltip = 'rgba(6,9,17,0.9)'     if _is_dark else 'rgba(255,255,255,0.95)'
+
     # Active/hover background
-    bg_active = 'rgba(74,222,128,0.15)' if theme_colors['app_bg'] == '#0a0e1a' else 'rgba(37,99,235,0.15)'
+    bg_active  = 'rgba(74,222,128,0.15)' if _is_dark else 'rgba(37,99,235,0.15)'
     
     return f"""
   /* Overlay UI */
@@ -854,10 +857,10 @@ body{background:transparent;font-family:'Courier New',monospace;padding:14px 4px
 """
 
 # ── About page iframe CSS ──────────────────────────────────────────────────────
-ABOUT_CSS = """
+_ABOUT_CSS_BASE = """
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { width:100%; min-height:100%; background:#0a0e1a;
+  html, body { width:100%; min-height:100%; background:__APP_BG__;
     font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#e2e8f0; }
 
   .page { max-width:960px; margin:0 auto; padding:3rem 2.5rem 6rem; }
@@ -929,3 +932,9 @@ ABOUT_CSS = """
   .footer-right { color:#1e293b; font-family:'Courier New',monospace; font-size:0.62rem;
     letter-spacing:0.08em; text-transform:uppercase; }
 """
+
+
+def get_about_css(theme_colors):
+    """Return about-page iframe CSS with the app background color injected."""
+    app_bg = theme_colors.get('app_bg', '#060911')
+    return _ABOUT_CSS_BASE.replace('__APP_BG__', app_bg)

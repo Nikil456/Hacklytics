@@ -605,7 +605,7 @@ function initGenieWidget(historyHtml) {
 
 def _render_inner_nav(key_suffix: str):
     """Navigation bar shared by dashboard, analytics, forecast, and about pages."""
-    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper-dashboard'), unsafe_allow_html=True)
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper-dashboard', theme_colors['app_bg']), unsafe_allow_html=True)
     st.markdown('<div class="nav-wrapper-dashboard">', unsafe_allow_html=True)
     cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
 
@@ -644,7 +644,7 @@ def _render_inner_nav(key_suffix: str):
 
 def show_home_page():
     """Landing page with hero section and background globe."""
-    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper'), unsafe_allow_html=True)
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper', theme_colors['app_bg']), unsafe_allow_html=True)
     st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
     cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
 
@@ -817,7 +817,7 @@ def run_app():
         render_forecast_page()
     elif page == 'about':
         _render_inner_nav('about')
-        render_about_page()
+        render_about_page(theme_colors)
     else:
         show_home_page()
 
