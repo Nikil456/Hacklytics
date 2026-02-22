@@ -5,6 +5,7 @@ import numpy as np
 import os
 import json
 import html as _h
+import base64
 from pathlib import Path
 
 try:
@@ -41,6 +42,7 @@ if 'theme' not in st.session_state:
 # Apply theme CSS (re-evaluated on every rerun so theme changes take effect)
 theme_colors = get_theme_colors(st.session_state.theme)
 st.markdown(get_main_css(theme_colors), unsafe_allow_html=True)
+
 
 
 # ── Genie Python-side API helpers ─────────────────────────────────────────────
@@ -608,7 +610,7 @@ def _render_inner_nav(key_suffix: str):
     cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
 
     with cols[0]:
-        if st.button('◈', key=f'logo_{key_suffix}'):
+        if st.button('⌂', key=f'logo_{key_suffix}'):
             st.session_state.current_page = 'home'
             st.rerun()
     with cols[1]:
@@ -647,7 +649,7 @@ def show_home_page():
     cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
 
     with cols[0]:
-        if st.button('◈', key='home_logo'):
+        if st.button('⌂', key='home_logo'):
             st.session_state.current_page = 'home'
             st.rerun()
     with cols[1]:
@@ -679,7 +681,7 @@ def show_home_page():
     st.markdown('''
     <div class="hero-container fade-in">
         <h1 class="hero-tagline">INSIGHT FOR IMPACT</h1>
-        <p class="hero-title">They need help. It\'s time to respond where it matters.</p>
+        <p class="hero-title">People need help. It\'s time to respond where it matters.</p>
         <p class="hero-description">
         An intelligent command center revealing critical insights into global health crises.
         Track vulnerability patterns, optimize funding allocation, and predict future humanitarian needs
@@ -744,13 +746,13 @@ def show_dashboard_page():
     col1, col2 = st.columns([0.7, 3.5])
 
     with col1:
-        with st.expander("TYPES    ▼", expanded=False):
-            st.markdown(f"""
-            <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem; padding-bottom: 0.75rem;">
-            ◈ Health Crisis<br>◈ Nutrition Emergency<br>◈ Water Shortage<br>
-            ◈ Shelter Need<br>◈ Protection Required
-            </div>
-            """, unsafe_allow_html=True)
+        # with st.expander("TYPES    ▼", expanded=False):
+        #     st.markdown(f"""
+        #     <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem; padding-bottom: 0.75rem;">
+        #     ◈ Health Crisis<br>◈ Nutrition Emergency<br>◈ Water Shortage<br>
+        #     ◈ Shelter Need<br>◈ Protection Required
+        #     </div>
+        #     """, unsafe_allow_html=True)
 
         st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
 
@@ -773,7 +775,7 @@ def show_dashboard_page():
         st.markdown(f'''<div class="entity-list">
             <div class="entity-header">
                 <span class="entity-count">{total_entities} CRISIS REGIONS</span>
-                <span class="sort-dropdown">SEVERITY ▼</span>
+                <span class="sort-dropdown">SEVERITY</span>
             </div>
             {entity_items_html}
         </div>''', unsafe_allow_html=True)

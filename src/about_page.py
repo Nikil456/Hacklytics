@@ -168,4 +168,4 @@ def render_about_page():
 </div>
 </body>
 </html>"""
-    components.html(about_html, height=1100, scrolling=True)
+    components.html(about_html, height=2400, scrolling=False)
