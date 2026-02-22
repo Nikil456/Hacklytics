@@ -290,7 +290,7 @@ def show_home_page():
     
     # Create navigation wrapper - all items as buttons for consistency
     st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
-    cols = st.columns([0.3, 0.8, 0.8, 0.8, 0.8, 5.5, 0.5])
+    cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
     
     with cols[0]:
         if st.button('◈', key='home_logo'):
@@ -310,6 +310,9 @@ def show_home_page():
     
     with cols[4]:
         st.button('ABOUT', key='nav_about')
+    
+    with cols[6]:
+        st.markdown('<div style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; padding-top: 0.5rem; text-align: right; white-space: nowrap;">built for the UN</div>', unsafe_allow_html=True)
     
     # with cols[6]:
     #     # Theme toggle button
@@ -420,7 +423,7 @@ def show_dashboard_page():
     
     # Create navigation wrapper - all items as buttons for consistency
     st.markdown('<div class="nav-wrapper-dashboard">', unsafe_allow_html=True)
-    cols = st.columns([0.3, 0.8, 0.8, 0.8, 0.8, 5.5, 0.5])
+    cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
     
     with cols[0]:
         if st.button('◈', key='dashboard_logo'):
@@ -438,6 +441,9 @@ def show_dashboard_page():
     
     with cols[4]:
         st.button('ABOUT', key='nav_about_dash')
+    
+    with cols[6]:
+        st.markdown('<div style="color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; padding-top: 0.5rem; text-align: right; white-space: nowrap;">built for the UN</div>', unsafe_allow_html=True)
     
     # with cols[6]:
     #     # Theme toggle button
@@ -508,15 +514,15 @@ def show_dashboard_page():
         globe_html = create_globe_html(theme_colors)
         
         # Title overlay - position absolute to not take up space, closer to globe
-        st.markdown(f'''
-        <div style="position: absolute; top: 80px; right: 20px; z-index: 1000; text-align: right; max-width: 420px; pointer-events: none;">
-            <p style="color: {theme_colors['accent']}; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; font-family: 'Courier New', monospace;">HUMANITARIAN HEALTH</p>
-            <h1 style="color: {theme_colors['primary_text']}; font-size: 2rem; font-weight: 300; margin: 0 0 12px 0; line-height: 1.1;">CRISIS REGIONS</h1>
-            <p style="color: {theme_colors['secondary_text']}; font-size: 0.85rem; line-height: 1.5; margin: 0;">
-            Global surveillance and spyware companies that develop technologies to collect user data, monitor communications, and capture biometrics, enabling governments and corporations to track individuals.
-            </p>
-        </div>
-        ''', unsafe_allow_html=True)
+        # st.markdown(f'''
+        # <div style="position: absolute; top: 80px; right: 20px; z-index: 1000; text-align: right; max-width: 420px; pointer-events: none;">
+        #     <p style="color: {theme_colors['accent']}; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; font-family: 'Courier New', monospace;">HUMANITARIAN HEALTH</p>
+        #     <h1 style="color: {theme_colors['primary_text']}; font-size: 2rem; font-weight: 300; margin: 0 0 12px 0; line-height: 1.1;">CRISIS REGIONS</h1>
+        #     <p style="color: {theme_colors['secondary_text']}; font-size: 0.85rem; line-height: 1.5; margin: 0;">
+        #     Global surveillance and spyware companies that develop technologies to collect user data, monitor communications, and capture biometrics, enabling governments and corporations to track individuals.
+        #     </p>
+        # </div>
+        # ''', unsafe_allow_html=True)
         
         # Globe - adjusted size to fit without scrolling
         components.html(globe_html, height=800, scrolling=False)

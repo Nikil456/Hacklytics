@@ -644,13 +644,14 @@ div.{wrapper_class} button * {{
 .{wrapper_class} button[data-testid="baseButton-secondary"] * {{
     color: {nav_text} !important;
     transition: color 0.6s ease !important;
-    padding: 0 !important;
+    padding: 0.5rem 0.75rem !important;
     margin: 0 !important;
     line-height: 1 !important;
     height: auto !important;
     min-height: auto !important;
     -webkit-tap-highlight-color: transparent !important;
     cursor: pointer !important;
+    white-space: nowrap !important;
 }}
 
 /* Hover state - FORCE GREEN COLOR */
