@@ -2,272 +2,27 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
+from styles import get_theme_colors, get_main_css, get_nav_css, get_globe_button_css
 
 # Page configuration
 st.set_page_config(
-    page_title="H2C2 - Humanitarian Health Command Center",
+    page_title="Insight for Impact",
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS to match Surveillance Watch design
-st.markdown("""
-<style>
-    /* Main app background - deep dark blue/black */
-    .stApp {
-        background-color: #0a0e1a;
-    }
-    
-    /* Remove default padding */
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 0rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        max-width: 100%;
-    }
-    
-    /* Remove extra spacing from streamlit elements */
-    .element-container {
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    /* Remove column gaps */
-    [data-testid="column"] {
-        padding: 0.5rem !important;
-    }
-    
-    div[data-testid="stHorizontalBlock"] {
-        gap: 1rem !important;
-    }
-    
-    /* Header styling */
-    .main-header {
-        color: #4ade80;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        margin-bottom: 0.25rem;
-        margin-top: 0;
-        font-family: 'Courier New', monospace;
-    }
-    
-    .page-title {
-        color: #ffffff;
-        font-size: 2.5rem;
-        font-weight: 300;
-        margin-bottom: 0.5rem;
-        margin-top: 0.25rem;
-        line-height: 1.1;
-    }
-    
-    .page-subtitle {
-        color: #9ca3af;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        margin-bottom: 1rem;
-        margin-top: 0;
-        max-width: 90%;
-    }
-    
-    /* Entity list styling - seamless blend with background */
-    .entity-list {
-        background-color: transparent;
-        border-radius: 0;
-        padding: 0;
-        height: calc(100vh - 200px);
-        min-height: 500px;
-        overflow-y: auto;
-        border: none;
-        margin-top: 0;
-    }
-    
-    .entity-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
-    .entity-count {
-        color: #4ade80;
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-    }
-    
-    .sort-dropdown {
-        color: #94a3b8;
-        font-size: 0.875rem;
-    }
-    
-    .entity-item {
-        color: #e2e8f0;
-        padding: 1rem 0;
-        margin: 0;
-        cursor: pointer;
-        border-radius: 0;
-        transition: all 0.2s;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-    }
-    
-    .entity-item:hover {
-        background-color: transparent;
-        color: #ffffff;
-        padding-left: 0.5rem;
-    }
-    
-    .entity-name {
-        font-size: 1.1rem;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-    }
-    
-    .entity-badge {
-        background-color: transparent;
-        color: #64748b;
-        padding: 0;
-        border-radius: 0;
-        font-size: 0.9rem;
-        font-weight: 400;
-        min-width: 2rem;
-        text-align: right;
-    }
-    
-    /* Globe container */
-    .globe-container {
-        position: relative;
-        height: 600px;
-        background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-        border-radius: 8px;
-        border: 1px solid rgba(148, 163, 184, 0.1);
-        overflow: hidden;
-        margin-top: 0;
-    }
-    
-    /* Top nav styling */
-    .top-nav {
-        margin-bottom: 1.5rem;
-    }
-    
-    .nav-item {
-        color: #64748b;
-        font-size: 0.75rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        cursor: pointer;
-        transition: color 0.2s;
-        margin: 0;
-        padding: 0;
-    }
-    
-    .nav-item.active {
-        color: #4ade80;
-    }
-    
-    .nav-item:hover {
-        color: #94a3b8;
-    }
-    
-    .nav-logo {
-        color: #4ade80;
-        font-size: 1.5rem;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    ::-webkit-scrollbar-track {
-        background: rgba(15, 23, 42, 0.5);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: #475569;
-        border-radius: 3px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: #64748b;
-    }
-    
-    /* Hide streamlit elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Filter buttons */
-    .filter-section {
-        margin-bottom: 0.25rem;
-        margin-top: 0;
-    }
-    
-    .filter-label {
-        color: #cbd5e1;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin-bottom: 0;
-        margin-top: 0;
-        font-weight: 600;
-        display: inline-block;
-        padding: 0.3rem 0;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    
-    .filter-label:hover {
-        color: #4ade80;
-    }
-    
-    .filter-container {
-        margin-bottom: 1rem;
-        margin-top: 0;
-        padding-top: 0;
-    }
-    
-    /* Expander styling to match the design */
-    .streamlit-expanderHeader {
-        background-color: transparent !important;
-        color: #cbd5e1 !important;
-        font-size: 0.7rem !important;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 600 !important;
-        padding: 0.3rem 0 !important;
-        border: none !important;
-    }
-    
-    .streamlit-expanderHeader:hover {
-        color: #4ade80 !important;
-    }
-    
-    .streamlit-expanderContent {
-        background-color: rgba(15, 23, 42, 0.8) !important;
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        border-radius: 4px;
-        padding: 0.5rem !important;
-        margin-top: 0.25rem;
-    }
-    
-    details[open] summary svg {
-        transform: rotate(180deg);
-    }
-</style>
-""", unsafe_allow_html=True)
+# Initialize session state for page navigation
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'home'
+
+# Initialize theme state (default to dark mode)
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'dark'
+
+# Get theme colors and apply CSS
+theme_colors = get_theme_colors(st.session_state.theme)
+st.markdown(get_main_css(theme_colors), unsafe_allow_html=True)
 
 def generate_sample_entities():
     """Generate sample crisis regions for the entity list"""
@@ -295,7 +50,59 @@ def generate_sample_entities():
     ]
     return pd.DataFrame(entities)
 
-def create_globe_html():
+def create_home_globe_html():
+    """Create a clean Earth globe for the home page (no crisis markers or filters)"""
+    
+    globe_html = """<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; background:transparent; }
+  #globeViz { width:100%; height:100%; }
+</style>
+</head>
+<body>
+
+<div id="globeViz"></div>
+
+<!-- globe.gl from CDN -->
+<script src="https://unpkg.com/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
+
+<script>
+  // Build clean globe with no data
+  const globe = Globe({ animateIn: true })
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundColor('rgba(10,14,26,0)')
+    .showAtmosphere(false)
+    (document.getElementById('globeViz'));
+
+  // Camera settings
+  globe.controls().autoRotate      = true;
+  globe.controls().autoRotateSpeed = 0.35;
+  globe.controls().enableZoom      = true;
+  globe.controls().minDistance     = 150;
+  globe.controls().maxDistance     = 700;
+
+  // Initial view - zoomed in to fill the frame better
+  globe.pointOfView({ lat: 10, lng: 20, altitude: 1.8 }, 800);
+
+  // Pause rotation on hover, resume on leave
+  const el = document.getElementById('globeViz');
+  el.addEventListener('mouseenter', () => {
+    globe.controls().autoRotate = false;
+  });
+  el.addEventListener('mouseleave', () => {
+    globe.controls().autoRotate = true;
+  });
+</script>
+</body>
+</html>"""
+    return globe_html
+
+def create_globe_html(theme_colors):
     """Create a 3D rotatable globe using globe.gl (Three.js-based)"""
     
     # Map severity to colors
@@ -316,6 +123,9 @@ def create_globe_html():
         for _, row in entities.iterrows()
     )
     
+    # Get theme-aware CSS for buttons, legend, and tooltips
+    button_css = get_globe_button_css(theme_colors)
+    
     globe_html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -325,58 +135,7 @@ def create_globe_html():
   html, body {{ width:100%; height:100%; overflow:hidden; background:transparent; }}
   #globeViz {{ width:100%; height:100%; }}
 
-  /* Overlay UI */
-  .overlay {{
-    position:fixed; z-index:100;
-    font-family:'JetBrains Mono','Fira Code',monospace;
-    font-size:10px;
-  }}
-  .glass {{
-    background:rgba(10,14,26,0.75);
-    border:1px solid rgba(74,222,128,0.2);
-    border-radius:6px;
-    backdrop-filter:blur(10px);
-    padding:6px 10px;
-    color:#94b4d4;
-  }}
-  /* View controls */
-  #controls {{ top:14px; left:14px; display:flex; gap:6px; }}
-  .vbtn {{
-    background:rgba(10,14,26,0.75);
-    border:1px solid rgba(74,222,128,0.2);
-    border-radius:5px; padding:4px 12px;
-    color:#94b4d4; cursor:pointer;
-    font-family:'JetBrains Mono',monospace; font-size:10px;
-    transition:all 0.15s;
-  }}
-  .vbtn.active, .vbtn:hover {{
-    background:rgba(74,222,128,0.15);
-    border-color:rgba(74,222,128,0.5);
-    color:#4ade80;
-  }}
-  /* Legend - centered at bottom, closer to globe */
-  #legend {{ 
-    bottom: 8px; 
-    left: 50%; 
-    transform: translateX(-50%);
-    display: flex;
-    gap: 15px;
-  }}
-  .leg {{ display:flex; align-items:center; gap:6px; }}
-  .ldot {{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }}
-  /* Tooltip override */
-  .globe-tooltip {{
-    background:rgba(10,14,26,0.9) !important;
-    border:1px solid rgba(74,222,128,0.3) !important;
-    border-radius:5px !important;
-    color:#94b4d4 !important;
-    font-family:'JetBrains Mono',monospace !important;
-    font-size:11px !important;
-    padding:6px 10px !important;
-    pointer-events:none;
-    line-height:1.6;
-  }}
-  .tooltip-name {{ font-weight:700; color:#4ade80; margin-bottom:2px; }}
+{button_css}
 </style>
 </head>
 <body>
@@ -523,22 +282,171 @@ def create_globe_html():
 </html>"""
     return globe_html
 
-def run_app():
-    # Top navigation bar - more compact
-    nav_cols = st.columns([0.5, 1.5, 1.5, 1.5, 1.5, 3])
+def show_home_page():
+    """Display the home page with hero section and background globe"""
     
-    with nav_cols[0]:
-        st.markdown('<p class="nav-logo">◈</p>', unsafe_allow_html=True)
-    with nav_cols[1]:
-        st.markdown('<p class="nav-item active">HEALTH REGIONS</p>', unsafe_allow_html=True)
-    with nav_cols[2]:
-        st.markdown('<p class="nav-item">REGIONAL TARGETS</p>', unsafe_allow_html=True)
-    with nav_cols[3]:
-        st.markdown('<p class="nav-item">FUNDERS</p>', unsafe_allow_html=True)
-    with nav_cols[4]:
-        st.markdown('<p class="nav-item">ABOUT</p>', unsafe_allow_html=True)
+    # Top navigation bar - all items as buttons for consistent alignment
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper'), unsafe_allow_html=True)
     
-    st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+    # Create navigation wrapper - all items as buttons for consistency
+    st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
+    cols = st.columns([0.3, 0.8, 0.8, 0.8, 0.8, 5.5, 0.5])
+    
+    with cols[0]:
+        if st.button('◈', key='home_logo'):
+            st.session_state.current_page = 'home'
+            st.rerun()
+    
+    with cols[1]:
+        if st.button('DASHBOARD', key='nav_dashboard'):
+            st.session_state.current_page = 'dashboard'
+            st.rerun()
+    
+    with cols[2]:
+        st.button('ANALYTICS', key='nav_analytics')
+    
+    with cols[3]:
+        st.button('FORECASTS', key='nav_forecasts')
+    
+    with cols[4]:
+        st.button('ABOUT', key='nav_about')
+    
+    # with cols[6]:
+    #     # Theme toggle button
+    #     theme_icon = '☀️' if st.session_state.theme == 'dark' else '🌙'
+    #     if st.button(theme_icon, key='theme_toggle_home'):
+    #         st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+    #         st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Hero section with fade-in animation
+    st.markdown('''
+    <div class="hero-container fade-in">
+        <h1 class="hero-tagline">INSIGHT FOR IMPACT</h1>
+        <p class="hero-title">They need help. It's time to respond where it matters.</p>
+        <p class="hero-description">
+        An intelligent command center revealing critical insights into global health crises. 
+        Track vulnerability patterns, optimize funding allocation, and predict future humanitarian needs 
+        across vulnerable populations worldwide.
+        </p>
+    </div>
+    ''', unsafe_allow_html=True)
+    
+    # CTA Cards with transparent backgrounds
+    st.markdown('''
+    <div class="cta-cards" style="position: relative; z-index: 10;">
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">MONITOR CRISIS REGIONS</div>
+            <div class="cta-card-description">
+            Track real-time health vulnerability across 20+ crisis regions with interactive visualization.
+            </div>
+        </div>
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">OPTIMIZE FUNDING</div>
+            <div class="cta-card-description">
+            Identify inefficiencies and maximize impact per dollar with AI-powered benchmarking.
+            </div>
+        </div>
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">PREDICT FUTURE NEEDS</div>
+            <div class="cta-card-description">
+            Forecast humanitarian resource demands with ML-powered vulnerability projections.
+            </div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+    
+    # Add CSS and wrapper for background globe
+    st.markdown('''
+    <style>
+    /* Prevent scrolling on home page */
+    section[data-testid="stAppViewContainer"] {
+        overflow: hidden !important;
+        height: 100vh !important;
+    }
+    .main .block-container {
+        overflow: hidden !important;
+        height: 100vh !important;
+        padding-bottom: 0 !important;
+        position: relative !important;
+    }
+    
+    /* Make content appear above globe */
+    .hero-container,
+    .cta-cards {
+        position: relative !important;
+        z-index: 10 !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    /* Target all element containers after the marker */
+    .home-globe-marker ~ [data-testid="element-container"],
+    [data-testid="element-container"]:has(iframe[srcdoc*="globeViz"]) {
+        position: fixed !important;
+        top: 55vh !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 300% !important;
+        height: 75vh !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .home-globe-marker ~ [data-testid="element-container"] iframe,
+    [data-testid="element-container"]:has(iframe[srcdoc*="globeViz"]) iframe {
+        opacity: 0.6 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    </style>
+    <div class="home-globe-marker"></div>
+    ''', unsafe_allow_html=True)
+    
+    # Render globe - the CSS above will position it
+    globe_html = create_home_globe_html()
+    components.html(globe_html, height=1000, scrolling=False)
+
+def show_dashboard_page():
+    """Display the main dashboard with globe and crisis regions"""
+    
+    # Get theme colors for inline styling
+    theme_colors = get_theme_colors(st.session_state.theme)
+    
+    # Top navigation bar - same styling as home page
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper-dashboard'), unsafe_allow_html=True)
+    
+    # Create navigation wrapper - all items as buttons for consistency
+    st.markdown('<div class="nav-wrapper-dashboard">', unsafe_allow_html=True)
+    cols = st.columns([0.3, 0.8, 0.8, 0.8, 0.8, 5.5, 0.5])
+    
+    with cols[0]:
+        if st.button('◈', key='dashboard_logo'):
+            st.session_state.current_page = 'home'
+            st.rerun()
+    
+    with cols[1]:
+        st.button('DASHBOARD', key='nav_dashboard_active')
+    
+    with cols[2]:
+        st.button('ANALYTICS', key='nav_analytics_dash')
+    
+    with cols[3]:
+        st.button('FORECASTS', key='nav_forecasts_dash')
+    
+    with cols[4]:
+        st.button('ABOUT', key='nav_about_dash')
+    
+    # with cols[6]:
+    #     # Theme toggle button
+    #     theme_icon = '☀️' if st.session_state.theme == 'dark' else '🌙'
+    #     if st.button(theme_icon, key='theme_toggle_dashboard'):
+    #         st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+    #         st.rerun()
+    
+    st.markdown('</div>', unsafe_allow_html=True)
     
     # Main content: Two columns - entity list on left, globe on right (even larger ratio)
     col1, col2 = st.columns([0.7, 3.5])
@@ -549,9 +457,9 @@ def run_app():
         col_filter1, col_filter2 = st.columns(2)
         
         with col_filter1:
-            with st.expander("TYPES ▼", expanded=False):
-                st.markdown("""
-                <div style="color: #cbd5e1; font-size: 0.85rem;">
+            with st.expander("TYPES", expanded=False):
+                st.markdown(f"""
+                <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem;">
                 ◈ Health Crisis<br>
                 ◈ Nutrition Emergency<br>
                 ◈ Water Shortage<br>
@@ -561,9 +469,9 @@ def run_app():
                 """, unsafe_allow_html=True)
         
         with col_filter2:
-            with st.expander("TARGETS ▼", expanded=False):
-                st.markdown("""
-                <div style="color: #cbd5e1; font-size: 0.85rem;">
+            with st.expander("TARGETS", expanded=False):
+                st.markdown(f"""
+                <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem;">
                 ◈ All Regions<br>
                 ◈ Africa<br>
                 ◈ Middle East<br>
@@ -597,14 +505,14 @@ def run_app():
     
     # Right column - Globe with title overlay
     with col2:
-        globe_html = create_globe_html()
+        globe_html = create_globe_html(theme_colors)
         
         # Title overlay - position absolute to not take up space, closer to globe
-        st.markdown('''
+        st.markdown(f'''
         <div style="position: absolute; top: 80px; right: 20px; z-index: 1000; text-align: right; max-width: 420px; pointer-events: none;">
-            <p style="color: #4ade80; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; font-family: 'Courier New', monospace;">HUMANITARIAN HEALTH</p>
-            <h1 style="color: #ffffff; font-size: 2rem; font-weight: 300; margin: 0 0 12px 0; line-height: 1.1;">CRISIS REGIONS</h1>
-            <p style="color: #9ca3af; font-size: 0.85rem; line-height: 1.5; margin: 0;">
+            <p style="color: {theme_colors['accent']}; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; font-family: 'Courier New', monospace;">HUMANITARIAN HEALTH</p>
+            <h1 style="color: {theme_colors['primary_text']}; font-size: 2rem; font-weight: 300; margin: 0 0 12px 0; line-height: 1.1;">CRISIS REGIONS</h1>
+            <p style="color: {theme_colors['secondary_text']}; font-size: 0.85rem; line-height: 1.5; margin: 0;">
             Global surveillance and spyware companies that develop technologies to collect user data, monitor communications, and capture biometrics, enabling governments and corporations to track individuals.
             </p>
         </div>
@@ -612,6 +520,15 @@ def run_app():
         
         # Globe - adjusted size to fit without scrolling
         components.html(globe_html, height=800, scrolling=False)
+
+def run_app():
+    """Main app entry point - handles page routing"""
+    if st.session_state.current_page == 'home':
+        show_home_page()
+    elif st.session_state.current_page == 'dashboard':
+        show_dashboard_page()
+    else:
+        show_dashboard_page()
 
 if __name__ == "__main__":
     run_app()
