@@ -1,0 +1,81 @@
+Field,Label,Value
+id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+title,Title of Dataset,OCHA Global Subnational Population Statistics
+name,Dataset URL,cod-ps-global
+notes,Description,"Latest COD population statistics compiled at the admin level. The CSV files contain subnational p-codes, their corresponding administrative names, source organization, and reference dates where available. These are constructed from individual country level population files, which can be found using <a href=""https://data.humdata.org/dataset/?dataseries_name=COD+-+Subnational+Population+Statistics"">this search</a> on HDX."
+dataset_source,Source,Multiple sources
+organization,Contributor,HDX
+dataset_date,Reference Period,[2001-01-01T00:00:00 TO 2026-12-31T23:59:59]
+last_modified,Updated,2026-02-19T20:10:52.538699
+data_update_frequency,Expected Update Frequency,Every year
+groups,Location,"Afghanistan, Albania, Angola, Anguilla, Antigua and Barbuda, Argentina, Armenia, Aruba, Azerbaijan, Bahamas, Bangladesh, Barbados, Belize, Benin, Bermuda, Bhutan, Bolivia (Plurinational State of), Botswana, Brazil, British Virgin Islands, Burkina Faso, Burundi, Cabo Verde, Cambodia, Cameroon, Cayman Islands, Central African Republic, Chad, Chile, Colombia, Comoros, Costa Rica, Côte d'Ivoire, Cuba, Curaçao, Democratic People's Republic of Korea, Democratic Republic of the Congo, Dominican Republic, Ecuador, Egypt, El Salvador, Eritrea, Eswatini, Ethiopia, Fiji, French Guiana, Gabon, Gambia, Georgia, Ghana, Grenada, Guadeloupe, Guatemala, Guinea, Guyana, Haiti, Honduras, Hungary, Indonesia, Iran (Islamic Republic of), Iraq, Jamaica, Kazakhstan, Kenya, Kiribati, Kyrgyzstan, Lao People's Democratic Republic, Lesotho, Liberia, Madagascar, Malawi, Malaysia, Maldives, Mali, Marshall Islands, Martinique, Mauritania, Mauritius, Mexico, Micronesia (Federated States of), Mongolia, Montserrat, Morocco, Mozambique, Myanmar, Namibia, Nepal, Nicaragua, Niger, Nigeria, Niue, Pakistan, Palau, Panama, Papua New Guinea, Paraguay, Peru, Philippines, Poland, Qatar, Republic of Moldova, Romania, Rwanda, Saint Barthélemy, Saint Kitts and Nevis, Saint Lucia, Saint Martin, Saint Vincent and the Grenadines, Sao Tome and Principe, Saudi Arabia, Senegal, Seychelles, Sierra Leone, Sint Maarten, Slovakia, Solomon Islands, Somalia, South Africa, South Sudan, Sri Lanka, State of Palestine, Sudan, Suriname, Tajikistan, Thailand, Timor-Leste, Togo, Tokelau, Tonga, Trinidad and Tobago, Tunisia, Turks and Caicos Islands, Türkiye, Uganda, United Republic of Tanzania, United States Virgin Islands, Uruguay, Uzbekistan, Vanuatu, Venezuela (Bolivarian Republic of), Viet Nam, Zambia, Zimbabwe"
+license_title,License,Creative Commons Attribution International (CC BY)
+methodology,Methodology,Other
+methodology_other,Define Methodology,Compiled daily from individual COD population statistics files. Please refer to the [source datasets](https://data.humdata.org/dataset/?dataseries_name=COD+-+Subnational+Population+Statistics) to learn more about their specific methodologies.
+caveats,Caveats/Comments,"This dataset is refreshed daily, but the source datasets have different update schedules. Please refer to the [source datasets](https://data.humdata.org/dataset/?dataseries_name=COD+-+Subnational+Population+Statistics) to verify their specific update frequency."
+tags,Tags,"baseline population, gender and age disaggregated data-gadd, hxl"
+resource_1_created,Created,2024-11-07T17:07:08.154974
+resource_1_description,Description,
+resource_1_format,File Format,CSV
+resource_1_download_url,Download URL,https://data.humdata.org/dataset/27e3d1c6-c57a-4159-85a4-adb6b7aca6b9/resource/d4ea8fba-3d98-4d6e-85c8-84a5b0b4ebd9/download/cod_population_admin0.csv
+resource_1_id,Resource ID,d4ea8fba-3d98-4d6e-85c8-84a5b0b4ebd9
+resource_1_last_modified,Updated,2026-02-19T20:10:52.537341
+resource_1_metadata_modified,Metadata Updated,2026-02-19T20:11:06.805922
+resource_1_microdata,Microdata,False
+resource_1_dataset_id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+resource_1_resource_type,Resource Type,file.upload
+resource_1_name,Resource Name,cod_population_admin0.csv
+resource_1_mimetype,MIME Type,text/csv
+resource_1_size,Size,786.1K
+resource_2_created,Created,2024-11-07T17:07:08.154979
+resource_2_description,Description,
+resource_2_format,File Format,CSV
+resource_2_download_url,Download URL,https://data.humdata.org/dataset/27e3d1c6-c57a-4159-85a4-adb6b7aca6b9/resource/3f7e17af-4ffa-455a-874c-6bf75e031730/download/cod_population_admin1.csv
+resource_2_id,Resource ID,3f7e17af-4ffa-455a-874c-6bf75e031730
+resource_2_last_modified,Updated,2026-02-19T20:10:52.537764
+resource_2_metadata_modified,Metadata Updated,2026-02-19T20:11:10.648972
+resource_2_microdata,Microdata,False
+resource_2_dataset_id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+resource_2_resource_type,Resource Type,file.upload
+resource_2_name,Resource Name,cod_population_admin1.csv
+resource_2_mimetype,MIME Type,text/csv
+resource_2_size,Size,11.3M
+resource_3_created,Created,2024-11-07T17:07:08.154982
+resource_3_description,Description,
+resource_3_format,File Format,CSV
+resource_3_download_url,Download URL,https://data.humdata.org/dataset/27e3d1c6-c57a-4159-85a4-adb6b7aca6b9/resource/87186331-46fd-4cc2-9be8-bceb715abb91/download/cod_population_admin2.csv
+resource_3_id,Resource ID,87186331-46fd-4cc2-9be8-bceb715abb91
+resource_3_last_modified,Updated,2026-02-19T20:10:52.538074
+resource_3_metadata_modified,Metadata Updated,2026-02-19T20:11:17.052165
+resource_3_microdata,Microdata,False
+resource_3_dataset_id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+resource_3_resource_type,Resource Type,file.upload
+resource_3_name,Resource Name,cod_population_admin2.csv
+resource_3_mimetype,MIME Type,text/csv
+resource_3_size,Size,135.3M
+resource_4_created,Created,2024-11-07T17:07:08.154986
+resource_4_description,Description,
+resource_4_format,File Format,CSV
+resource_4_download_url,Download URL,https://data.humdata.org/dataset/27e3d1c6-c57a-4159-85a4-adb6b7aca6b9/resource/3a58aef6-7884-40fc-8a0f-5bca8886e358/download/cod_population_admin3.csv
+resource_4_id,Resource ID,3a58aef6-7884-40fc-8a0f-5bca8886e358
+resource_4_last_modified,Updated,2026-02-19T20:10:52.538362
+resource_4_metadata_modified,Metadata Updated,2026-02-19T20:11:12.119409
+resource_4_microdata,Microdata,False
+resource_4_dataset_id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+resource_4_resource_type,Resource Type,file.upload
+resource_4_name,Resource Name,cod_population_admin3.csv
+resource_4_mimetype,MIME Type,text/csv
+resource_4_size,Size,35.4M
+resource_5_created,Created,2025-02-11T10:48:09.725753
+resource_5_description,Description,
+resource_5_format,File Format,CSV
+resource_5_download_url,Download URL,https://data.humdata.org/dataset/27e3d1c6-c57a-4159-85a4-adb6b7aca6b9/resource/11c76189-42fa-48d2-b794-b89517f0c811/download/cod_population_admin4.csv
+resource_5_id,Resource ID,11c76189-42fa-48d2-b794-b89517f0c811
+resource_5_last_modified,Updated,2026-02-19T20:10:52.538699
+resource_5_metadata_modified,Metadata Updated,2026-02-19T20:11:09.213582
+resource_5_microdata,Microdata,False
+resource_5_dataset_id,Dataset ID,27e3d1c6-c57a-4159-85a4-adb6b7aca6b9
+resource_5_resource_type,Resource Type,file.upload
+resource_5_name,Resource Name,cod_population_admin4.csv
+resource_5_mimetype,MIME Type,text/csv
+resource_5_size,Size,4.6M

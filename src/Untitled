@@ -1,0 +1,59 @@
+To replicate this analysis in Google Colab, you can use the following structured prompt. It is designed to guide a coding agent (like Gemini or Colab's AI) through the exact data cleaning, metric engineering, and visualization steps we performed.
+
+---
+
+### **Prompt for Google Colab AI Agent**
+
+**Role:** You are a Senior Humanitarian Data Scientist.
+**Objective:** Solve the "Geo-Insight Challenge" to identify the most overlooked humanitarian crises by analyzing mismatches between needs, targeting, and funding.
+
+**1. Data Environment:**
+The following CSV files are uploaded in the current directory:
+
+* `country_level_summary (1).csv`: Primary country-level humanitarian stats.
+* `updated_admin1_summary_data (1).csv`: Sub-national data (Admin 1 level).
+* `hpc_hno_2025.csv`: Granular cluster/sectoral data (contains HXL tags in row 0).
+* `humanitarian-response-plans.csv`: Global funding requirements and plans.
+* `cod_population_admin0.csv` & `cod_population_admin1.csv`: Reference population data.
+
+**2. Task 1: Data Cleaning & Preprocessing**
+
+* Load `hpc_hno_2025.csv`. **Crucial:** Skip the first row (row index 0) as it contains HXL tags.
+* Convert `Population`, `In Need`, and `Targeted` columns to numeric, handling errors as `NaN`.
+* Filter `hpc_hno_2025.csv` to remove rows where the Cluster is 'ALL' to focus on sectoral analysis.
+* For `country_level_summary (1).csv`, ensure all financial and population columns are numeric.
+
+**3. Task 2: Metric Engineering**
+Create a new dataframe `df_country_metrics` and calculate the following:
+
+* **Targeting Efficiency:** 
+* **Budget Intensity ($/PIN):** 
+* **Need Prevalence:** 
+* **Beneficiary-to-Budget Ratio (BBR):** 
+* **Mismatch Score:** Normalize `Severity_Score` and `Budget_per_PIN` to a 0–1 scale. Calculate: . (High score = Overlooked).
+* **Severity Brackets:** Divide the countries into 4 quartiles ('Low', 'Medium', 'High', 'Critical') based on `Severity_Score`.
+
+**4. Task 3: Sectoral Benchmarking**
+
+* Calculate the **Global Cluster Efficiency** by grouping `hpc_hno_2025.csv` by `Cluster` and calculating the mean .
+* Create a **Benchmark Ratio** for every country-sector project: .
+
+**5. Task 4: Visualizations**
+Create the following three plots using Matplotlib/Seaborn:
+
+* **Plot 1 (Scatter):** X-axis = `Severity_Score`, Y-axis = `Budget_per_PIN`. Use `Mismatch_Score` for the color (cmap='RdYlGn_r') and `In Need` for the size. Annotate outliers like Sudan (SDN), Afghanistan (AFG), and Myanmar (MMR).
+* **Plot 2 (Bar):** Global Humanitarian Targeting Efficiency by Cluster (Sorted from lowest to highest). Add a 50% threshold line.
+* **Plot 3 (Boxplot):** `BBR` on the Y-axis and `Severity_Bracket` on the X-axis to show how aid "thins out" in critical crises.
+
+**6. Task 5: Output Generation**
+
+* Export a final CSV `overlooked_crises_ranking.csv` sorted by `Mismatch_Score`.
+* Export a CSV `underperforming_projects.csv` containing country-sector pairs where the `Benchmark_Ratio` is below 0.5.
+
+---
+
+### **Why this prompt works:**
+
+1. **HXL Awareness:** It prevents the code from crashing on the non-numeric "tags" row common in OCHA data.
+2. **Context-Specific Metrics:** It introduces the **BBR** and **Mismatch Score**, which are the specific "Geo-Insight" metrics needed to prove a crisis is overlooked (rather than just being small).
+3. **Benchmarking Logic:** It forces the agent to compare local performance against global sectoral norms, which is essential for "flagging unusually high or low ratios" as requested by the challenge.

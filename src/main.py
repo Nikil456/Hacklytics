@@ -3,6 +3,10 @@ import streamlit.components.v1 as components
 import pandas as pd
 import numpy as np
 
+# ── Session state ──────────────────────────────────────────────────────────────
+if "active_page" not in st.session_state:
+    st.session_state.active_page = "HEALTH REGIONS"
+
 # Page configuration
 st.set_page_config(
     page_title="H2C2 - Humanitarian Health Command Center",
@@ -25,14 +29,11 @@ st.markdown("""
     }
 
     .element-container { margin: 0 !important; padding: 0 !important; }
-
     [data-testid="column"] { padding: 0.5rem !important; }
-
     div[data-testid="stHorizontalBlock"] { gap: 1rem !important; }
 
     .entity-list {
         background-color: transparent;
-        border-radius: 0;
         padding: 0;
         height: calc(100vh - 200px);
         min-height: 500px;
@@ -50,13 +51,7 @@ st.markdown("""
         border-bottom: 1px solid rgba(148, 163, 184, 0.2);
     }
 
-    .entity-count {
-        color: #4ade80;
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-    }
-
+    .entity-count { color: #4ade80; font-size: 0.875rem; font-weight: 600; letter-spacing: 0.1em; }
     .sort-dropdown { color: #94a3b8; font-size: 0.875rem; }
 
     .entity-item {
@@ -72,38 +67,22 @@ st.markdown("""
     }
 
     .entity-item:hover { color: #ffffff; padding-left: 0.5rem; }
-
     .entity-name { font-size: 1.1rem; font-weight: 400; letter-spacing: 0.02em; }
-
-    .entity-badge {
-        color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 400;
-        min-width: 2rem;
-        text-align: right;
-    }
+    .entity-badge { color: #64748b; font-size: 0.9rem; font-weight: 400; min-width: 2rem; text-align: right; }
 
     .nav-item {
         color: #64748b;
         font-size: 0.75rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        margin: 0;
-        padding: 0;
+        margin: 0; padding: 0;
         line-height: 2;
     }
-
     .nav-item.active { color: #4ade80; }
-
     .nav-logo { color: #4ade80; font-size: 1.5rem; margin: 0; padding: 0; }
 
-    /* Nav search bar */
-    .nav-search-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
+    /* Nav search */
+    .nav-search-wrap { position: relative; display: flex; align-items: center; width: 100%; }
 
     .nav-search-input {
         width: 100%;
@@ -120,37 +99,44 @@ st.markdown("""
         box-sizing: border-box;
         letter-spacing: 0.02em;
     }
-
     .nav-search-input::placeholder { color: #334155; }
-
     .nav-search-input:focus {
         border-color: rgba(74, 222, 128, 0.5);
-        box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.06),
-                    0 0 18px rgba(74, 222, 128, 0.06);
+        box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.06), 0 0 18px rgba(74, 222, 128, 0.06);
     }
 
     .nav-search-btn {
-        position: absolute;
-        right: 5px;
+        position: absolute; right: 5px;
         background: rgba(74, 222, 128, 0.1);
         border: 1px solid rgba(74, 222, 128, 0.3);
         border-radius: 50px;
         color: #4ade80;
         font-family: 'Courier New', monospace;
-        font-size: 0.65rem;
-        font-weight: 700;
+        font-size: 0.65rem; font-weight: 700;
         letter-spacing: 0.06em;
         padding: 0.3rem 0.75rem;
-        cursor: pointer;
-        text-transform: uppercase;
-        transition: all 0.15s;
-        white-space: nowrap;
+        cursor: pointer; text-transform: uppercase;
+        transition: all 0.15s; white-space: nowrap;
     }
-
     .nav-search-btn:hover {
         background: rgba(74, 222, 128, 0.2);
         border-color: rgba(74, 222, 128, 0.6);
     }
+
+    /* Nav button reset */
+    button[kind="secondary"] {
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.1em !important;
+        text-transform: uppercase !important;
+        font-family: inherit !important;
+        transition: color 0.2s !important;
+        color: #64748b !important;
+    }
+    button[kind="secondary"]:hover { color: #94a3b8 !important; }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
@@ -171,9 +157,7 @@ st.markdown("""
         padding: 0.3rem 0 !important;
         border: none !important;
     }
-
     .streamlit-expanderHeader:hover { color: #4ade80 !important; }
-
     .streamlit-expanderContent {
         background-color: rgba(15, 23, 42, 0.8) !important;
         border: 1px solid rgba(148, 163, 184, 0.2);
@@ -181,7 +165,6 @@ st.markdown("""
         padding: 0.5rem !important;
         margin-top: 0.25rem;
     }
-
     details[open] summary svg { transform: rotate(180deg); }
 </style>
 """, unsafe_allow_html=True)
@@ -230,50 +213,26 @@ def create_globe_html():
   * {{ margin:0; padding:0; box-sizing:border-box; }}
   html, body {{ width:100%; height:100%; overflow:hidden; background:transparent; }}
   #globeViz {{ width:100%; height:100%; }}
-  .overlay {{
-    position:fixed; z-index:100;
-    font-family:'JetBrains Mono','Fira Code',monospace;
-    font-size:10px;
-  }}
+  .overlay {{ position:fixed; z-index:100; font-family:'JetBrains Mono','Fira Code',monospace; font-size:10px; }}
   .glass {{
-    background:rgba(10,14,26,0.75);
-    border:1px solid rgba(74,222,128,0.2);
-    border-radius:6px;
-    backdrop-filter:blur(10px);
-    padding:6px 10px;
-    color:#94b4d4;
+    background:rgba(10,14,26,0.75); border:1px solid rgba(74,222,128,0.2);
+    border-radius:6px; backdrop-filter:blur(10px); padding:6px 10px; color:#94b4d4;
   }}
   #controls {{ top:14px; left:14px; display:flex; gap:6px; }}
   .vbtn {{
-    background:rgba(10,14,26,0.75);
-    border:1px solid rgba(74,222,128,0.2);
-    border-radius:5px; padding:4px 12px;
-    color:#94b4d4; cursor:pointer;
-    font-family:'JetBrains Mono',monospace; font-size:10px;
-    transition:all 0.15s;
+    background:rgba(10,14,26,0.75); border:1px solid rgba(74,222,128,0.2);
+    border-radius:5px; padding:4px 12px; color:#94b4d4; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; font-size:10px; transition:all 0.15s;
   }}
-  .vbtn.active, .vbtn:hover {{
-    background:rgba(74,222,128,0.15);
-    border-color:rgba(74,222,128,0.5);
-    color:#4ade80;
-  }}
-  #legend {{
-    bottom:8px; left:50%;
-    transform:translateX(-50%);
-    display:flex; gap:15px;
-  }}
+  .vbtn.active, .vbtn:hover {{ background:rgba(74,222,128,0.15); border-color:rgba(74,222,128,0.5); color:#4ade80; }}
+  #legend {{ bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:15px; }}
   .leg {{ display:flex; align-items:center; gap:6px; }}
   .ldot {{ width:10px; height:10px; border-radius:50%; flex-shrink:0; }}
   .globe-tooltip {{
-    background:rgba(10,14,26,0.9) !important;
-    border:1px solid rgba(74,222,128,0.3) !important;
-    border-radius:5px !important;
-    color:#94b4d4 !important;
-    font-family:'JetBrains Mono',monospace !important;
-    font-size:11px !important;
-    padding:6px 10px !important;
-    pointer-events:none;
-    line-height:1.6;
+    background:rgba(10,14,26,0.9) !important; border:1px solid rgba(74,222,128,0.3) !important;
+    border-radius:5px !important; color:#94b4d4 !important;
+    font-family:'JetBrains Mono',monospace !important; font-size:11px !important;
+    padding:6px 10px !important; pointer-events:none; line-height:1.6;
   }}
   .tooltip-name {{ font-weight:700; color:#4ade80; margin-bottom:2px; }}
 </style>
@@ -367,20 +326,240 @@ def create_globe_html():
     return globe_html
 
 
+def render_about_page():
+    about_html = """<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body {
+    width:100%; min-height:100%;
+    background:#0a0e1a;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #e2e8f0;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+  }
+
+  .eyebrow {
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    color: #ffffff;
+    font-size: 3rem;
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+
+  .rule {
+    border: none;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    margin-bottom: 2.5rem;
+  }
+
+  .lead {
+    color: #cbd5e1;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 1.6rem;
+    font-weight: 300;
+  }
+
+  .lead b { color: #ffffff; font-weight: 500; }
+
+  /* Three-pillar row */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .pillar {
+    padding: 1.4rem 1.2rem;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 6px;
+    transition: border-color 0.2s;
+  }
+
+  .pillar:hover { border-color: rgba(74, 222, 128, 0.25); }
+
+  .pillar-icon {
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .pillar h3 {
+    color: #f1f5f9;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+  }
+
+  .pillar p {
+    color: #64748b;
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  /* Stack row */
+  .stack-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+  }
+
+  .stack-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    border-radius: 4px;
+    padding: 0.25rem 0.65rem;
+  }
+
+  .stack-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #334155;
+    margin-top: 2.5rem;
+    margin-bottom: 0.6rem;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <p class="eyebrow">Hacklytics 2026 &nbsp;·&nbsp; Databricks &times; United Nations</p>
+  <h1>H2C2</h1>
+  <p class="subtitle">Humanitarian Health Command Center</p>
+  <hr class="rule" />
+
+  <p class="lead">
+    Every year, billions of dollars in humanitarian aid are allocated without a clear picture of
+    where the need is greatest. Funding reaches some regions generously while others &mdash;
+    equally devastated &mdash; are barely touched. <b>H2C2 exists to close that gap.</b>
+  </p>
+
+  <p class="lead">
+    We join the UN&rsquo;s Humanitarian Needs Overview (HNO) and Humanitarian Response Plan (HRP)
+    datasets into a single live intelligence layer. The result is a <b>Health Vulnerability Index</b>
+    &mdash; a real-time score that shows, for every crisis region on Earth, how far medical funding
+    lags behind the severity of the situation on the ground.
+  </p>
+
+  <p class="lead">
+    From that foundation we built three tools: an interactive 3D globe that makes the data
+    impossible to ignore, a natural-language interface so any official can ask a question
+    without writing a single line of SQL, and a machine-learning engine that flags
+    inefficient projects and forecasts where the next health desert will emerge
+    before it becomes a headline.
+  </p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <p class="pillar-icon">01 &mdash; The Map</p>
+      <h3>Live Crisis Globe</h3>
+      <p>A 3D rotating Earth colored by vulnerability. Zoom from a global view down to
+         individual states and districts. Every pulse on the map is a real crisis, ranked
+         by need vs. funding.</p>
+    </div>
+    <div class="pillar">
+      <p class="pillar-icon">02 &mdash; The Genie</p>
+      <h3>Ask in Plain Language</h3>
+      <p>Powered by Databricks AI/BI Genie. Type a question &mdash; &ldquo;Why is South Sudan
+         critical?&rdquo; or &ldquo;Find projects over $500 per person&rdquo; &mdash; and the
+         system writes the SQL and returns the answer instantly.</p>
+    </div>
+    <div class="pillar">
+      <p class="pillar-icon">03 &mdash; The Engine</p>
+      <h3>Forecast &amp; Benchmark</h3>
+      <p>An ML layer that predicts funding gaps six months out and uses KNN to surface
+         peer projects that are doing more with less &mdash; giving auditors a concrete
+         benchmark to act on today.</p>
+    </div>
+  </div>
+
+  <p class="stack-label">Built with</p>
+  <div class="stack-row">
+    <span class="stack-tag">Databricks</span>
+    <span class="stack-tag">Delta Lake</span>
+    <span class="stack-tag">Unity Catalog</span>
+    <span class="stack-tag">AI/BI Genie</span>
+    <span class="stack-tag">Spark MLlib</span>
+    <span class="stack-tag">Streamlit</span>
+    <span class="stack-tag">globe.gl</span>
+    <span class="stack-tag">UN HDX Data</span>
+  </div>
+
+</div>
+</body>
+</html>"""
+    components.html(about_html, height=820, scrolling=True)
+
+
 def run_app():
-    # ── Navigation bar with inline Genie search ───────────────────────────────
+    page = st.session_state.active_page
+
+    # ── Navigation ────────────────────────────────────────────────────────────
     nav_cols = st.columns([0.5, 1.5, 1.5, 1.5, 1.5, 3])
 
     with nav_cols[0]:
         st.markdown('<p class="nav-logo">◈</p>', unsafe_allow_html=True)
+
     with nav_cols[1]:
-        st.markdown('<p class="nav-item active">HEALTH REGIONS</p>', unsafe_allow_html=True)
+        hr_color = "#4ade80" if page == "HEALTH REGIONS" else "#64748b"
+        st.markdown(f'<p class="nav-item" style="color:{hr_color}; cursor:pointer;">HEALTH REGIONS</p>', unsafe_allow_html=True)
+        if st.button("‣", key="btn_hr", help="Health Regions"):
+            st.session_state.active_page = "HEALTH REGIONS"
+            st.rerun()
+
     with nav_cols[2]:
         st.markdown('<p class="nav-item">REGIONAL TARGETS</p>', unsafe_allow_html=True)
+
     with nav_cols[3]:
         st.markdown('<p class="nav-item">FUNDERS</p>', unsafe_allow_html=True)
+
     with nav_cols[4]:
-        st.markdown('<p class="nav-item">ABOUT</p>', unsafe_allow_html=True)
+        ab_color = "#4ade80" if page == "ABOUT" else "#64748b"
+        st.markdown(f'<p class="nav-item" style="color:{ab_color}; cursor:pointer;">ABOUT</p>', unsafe_allow_html=True)
+        if st.button("‣", key="btn_about", help="About"):
+            st.session_state.active_page = "ABOUT"
+            st.rerun()
+
     with nav_cols[5]:
         st.markdown("""
         <div class="nav-search-wrap">
@@ -406,9 +585,21 @@ def run_app():
         </script>
         """, unsafe_allow_html=True)
 
+    # Hide the tiny arrow buttons — they're just click triggers
+    st.markdown("""
+    <style>
+      button[kind="secondary"] { display:none !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
 
-    # ── Main content ─────────────────────────────────────────────────────────
+    # ── Page routing ──────────────────────────────────────────────────────────
+    if page == "ABOUT":
+        render_about_page()
+        return
+
+    # ── Health Regions (main page — untouched) ────────────────────────────────
     col1, col2 = st.columns([0.7, 3.5])
 
     with col1:
