@@ -1,5 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
+import pandas as pd
+import numpy as np
 import os
 import json
 import html as _h
@@ -11,34 +13,37 @@ try:
 except ImportError:
     pass
 
-from styles import APP_CSS, NAV_BUTTON_CSS
+from styles import get_theme_colors, get_main_css, get_nav_css
 from analytics_page import render_analytics_page
 from forecast_page import render_forecast_page
 from about_page import render_about_page
-from health_regions import render_health_regions_page
+from health_regions import generate_sample_entities, create_globe_html, create_home_globe_html
 
-# ── Databricks Genie Configuration ──────────────────────────────────────────
-# Values are loaded from the .env file at the project root (see .gitignore).
+# ── Databricks Genie Configuration ────────────────────────────────────────────
 DATABRICKS_HOST  = os.environ.get("DATABRICKS_HOST", "")
 DATABRICKS_TOKEN = os.environ.get("DATABRICKS_TOKEN", "")
 GENIE_SPACE_ID   = os.environ.get("GENIE_SPACE_ID", "")
 
-# ── Session state ──────────────────────────────────────────────────────────────
-if "active_page" not in st.session_state:
-    st.session_state.active_page = "HEALTH REGIONS"
-
-# Page configuration
+# ── Page configuration ────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="H2C2 - Humanitarian Health Command Center",
+    page_title="Insight for Impact",
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-st.markdown(f"<style>{APP_CSS}</style>", unsafe_allow_html=True)
+# ── Session state ─────────────────────────────────────────────────────────────
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'home'
+if 'theme' not in st.session_state:
+    st.session_state.theme = 'dark'
+
+# Apply theme CSS (re-evaluated on every rerun so theme changes take effect)
+theme_colors = get_theme_colors(st.session_state.theme)
+st.markdown(get_main_css(theme_colors), unsafe_allow_html=True)
 
 
-# ── Genie Python-side API helpers ────────────────────────────────────────────
+# ── Genie Python-side API helpers ─────────────────────────────────────────────
 
 def _genie_call(message: str, conversation_id):
     """
@@ -594,77 +599,210 @@ function initGenieWidget(historyHtml) {
     components.html(script, height=0, scrolling=False)
 
 
-# ── App entry point ────────────────────────────────────────────────────────────
+# ── Shared inner-page navigation ──────────────────────────────────────────────
+
+def _render_inner_nav(key_suffix: str):
+    """Navigation bar shared by dashboard, analytics, forecast, and about pages."""
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper-dashboard'), unsafe_allow_html=True)
+    st.markdown('<div class="nav-wrapper-dashboard">', unsafe_allow_html=True)
+    cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
+
+    with cols[0]:
+        if st.button('◈', key=f'logo_{key_suffix}'):
+            st.session_state.current_page = 'home'
+            st.rerun()
+    with cols[1]:
+        if st.button('DASHBOARD', key=f'nav_dash_{key_suffix}'):
+            st.session_state.current_page = 'dashboard'
+            st.rerun()
+    with cols[2]:
+        if st.button('ANALYTICS', key=f'nav_analytics_{key_suffix}'):
+            st.session_state.current_page = 'analytics'
+            st.rerun()
+    with cols[3]:
+        if st.button('FORECASTS', key=f'nav_forecast_{key_suffix}'):
+            st.session_state.current_page = 'forecast'
+            st.rerun()
+    with cols[4]:
+        if st.button('ABOUT', key=f'nav_about_{key_suffix}'):
+            st.session_state.current_page = 'about'
+            st.rerun()
+    with cols[6]:
+        st.markdown(
+            '<div style="color:#9ca3af;font-size:0.75rem;text-transform:uppercase;'
+            'letter-spacing:0.1em;padding-top:0.5rem;text-align:right;white-space:nowrap;">'
+            'built for the UN</div>',
+            unsafe_allow_html=True,
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ── Home page (landing) ───────────────────────────────────────────────────────
+
+def show_home_page():
+    """Landing page with hero section and background globe."""
+    st.markdown(get_nav_css(st.session_state.theme, 'nav-wrapper'), unsafe_allow_html=True)
+    st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
+    cols = st.columns([0.5, 1.2, 1.2, 1.2, 0.8, 3.8, 1.3])
+
+    with cols[0]:
+        if st.button('◈', key='home_logo'):
+            st.session_state.current_page = 'home'
+            st.rerun()
+    with cols[1]:
+        if st.button('DASHBOARD', key='nav_dashboard'):
+            st.session_state.current_page = 'dashboard'
+            st.rerun()
+    with cols[2]:
+        if st.button('ANALYTICS', key='nav_analytics'):
+            st.session_state.current_page = 'analytics'
+            st.rerun()
+    with cols[3]:
+        if st.button('FORECASTS', key='nav_forecasts'):
+            st.session_state.current_page = 'forecast'
+            st.rerun()
+    with cols[4]:
+        if st.button('ABOUT', key='nav_about'):
+            st.session_state.current_page = 'about'
+            st.rerun()
+    with cols[6]:
+        st.markdown(
+            '<div style="color:#9ca3af;font-size:0.75rem;text-transform:uppercase;'
+            'letter-spacing:0.1em;padding-top:0.5rem;text-align:right;white-space:nowrap;">'
+            'built for the UN</div>',
+            unsafe_allow_html=True,
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('''
+    <div class="hero-container fade-in">
+        <h1 class="hero-tagline">INSIGHT FOR IMPACT</h1>
+        <p class="hero-title">They need help. It\'s time to respond where it matters.</p>
+        <p class="hero-description">
+        An intelligent command center revealing critical insights into global health crises.
+        Track vulnerability patterns, optimize funding allocation, and predict future humanitarian needs
+        across vulnerable populations worldwide.
+        </p>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('''
+    <div class="cta-cards" style="position: relative; z-index: 10;">
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">MONITOR CRISIS REGIONS</div>
+            <div class="cta-card-description">
+            Track real-time health vulnerability across 20+ crisis regions with interactive visualization.
+            </div>
+        </div>
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">OPTIMIZE FUNDING</div>
+            <div class="cta-card-description">
+            Identify inefficiencies and maximize impact per dollar with AI-powered benchmarking.
+            </div>
+        </div>
+        <div class="cta-card" style="background: rgba(15, 20, 35, 0.7) !important; backdrop-filter: blur(10px);">
+            <div class="cta-card-title">PREDICT FUTURE NEEDS</div>
+            <div class="cta-card-description">
+            Forecast humanitarian resource demands with ML-powered vulnerability projections.
+            </div>
+        </div>
+    </div>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('''
+    <style>
+    section[data-testid="stAppViewContainer"] { overflow: hidden !important; height: 100vh !important; }
+    .main .block-container { overflow: hidden !important; height: 100vh !important;
+        padding-bottom: 0 !important; position: relative !important; }
+    .hero-container, .cta-cards { position: relative !important; z-index: 10 !important;
+        padding-bottom: 2rem !important; }
+    .home-globe-marker ~ [data-testid="element-container"],
+    [data-testid="element-container"]:has(iframe[srcdoc*="globeViz"]) {
+        position: fixed !important; top: 55vh !important; left: 50% !important;
+        transform: translateX(-50%) !important; width: 300% !important; height: 75vh !important;
+        z-index: 1 !important; pointer-events: none !important; margin: 0 !important; padding: 0 !important; }
+    .home-globe-marker ~ [data-testid="element-container"] iframe,
+    [data-testid="element-container"]:has(iframe[srcdoc*="globeViz"]) iframe {
+        opacity: 0.6 !important; width: 100% !important; height: 100% !important; }
+    </style>
+    <div class="home-globe-marker"></div>
+    ''', unsafe_allow_html=True)
+
+    components.html(create_home_globe_html(), height=1000, scrolling=False)
+
+
+# ── Dashboard / Health Regions page ──────────────────────────────────────────
+
+def show_dashboard_page():
+    """Crisis regions dashboard with themed globe and entity list."""
+    _render_inner_nav('dashboard')
+
+    col1, col2 = st.columns([0.7, 3.5])
+
+    with col1:
+        col_filter1, col_filter2 = st.columns(2)
+        with col_filter1:
+            with st.expander("TYPES", expanded=False):
+                st.markdown(f"""
+                <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem;">
+                ◈ Health Crisis<br>◈ Nutrition Emergency<br>◈ Water Shortage<br>
+                ◈ Shelter Need<br>◈ Protection Required
+                </div>
+                """, unsafe_allow_html=True)
+        with col_filter2:
+            with st.expander("TARGETS", expanded=False):
+                st.markdown(f"""
+                <div style="color: {theme_colors['entity_text']}; font-size: 0.85rem;">
+                ◈ All Regions<br>◈ Africa<br>◈ Middle East<br>◈ Asia<br>◈ Americas
+                </div>
+                """, unsafe_allow_html=True)
+
+        st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+
+        entities       = generate_sample_entities()
+        total_entities = len(entities)
+        entity_items_html = ""
+        for _, entity in entities.iterrows():
+            entity_items_html += f'''<div class="entity-item">
+                <span class="entity-name">{entity['name']}</span>
+                <span class="entity-badge">{entity['projects']}</span>
+            </div>'''
+
+        st.markdown(f'''<div class="entity-list">
+            <div class="entity-header">
+                <span class="entity-count">{total_entities} CRISIS REGIONS</span>
+                <span class="sort-dropdown">A-Z ▼</span>
+            </div>
+            {entity_items_html}
+        </div>''', unsafe_allow_html=True)
+
+    with col2:
+        components.html(create_globe_html(theme_colors), height=800, scrolling=False)
+
+
+# ── App entry point ───────────────────────────────────────────────────────────
 
 def run_app():
-    page = st.session_state.active_page
+    page = st.session_state.current_page
 
-    # Genie chatbot (persistent on all pages)
+    # Genie chatbot is persistent across all pages
     render_genie_chatbot()
 
-    # Navigation
-    st.markdown(f"<style>{NAV_BUTTON_CSS}</style>", unsafe_allow_html=True)
-
-    nav_cols = st.columns([0.5, 1.5, 1.5, 1.5, 1.5, 1.5])
-
-    with nav_cols[0]:
-        st.markdown('<p class="nav-logo">◈</p>', unsafe_allow_html=True)
-
-    with nav_cols[1]:
-        hr_color = "#4ade80" if page == "HEALTH REGIONS" else "#64748b"
-        if st.button("HEALTH REGIONS", key="btn_hr"):
-            st.session_state.active_page = "HEALTH REGIONS"
-            st.rerun()
-        if page == "HEALTH REGIONS":
-            st.markdown('<div style="height:2px;background:#4ade80;border-radius:1px;margin-top:-6px;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<style>button[data-testid="baseButton-secondary"][aria-label="HEALTH REGIONS"]{{color:{hr_color}!important}}</style>', unsafe_allow_html=True)
-
-    with nav_cols[2]:
-        fc_color = "#4ade80" if page == "FORECAST" else "#64748b"
-        if st.button("FORECAST", key="btn_forecast"):
-            st.session_state.active_page = "FORECAST"
-            st.rerun()
-        if page == "FORECAST":
-            st.markdown('<div style="height:2px;background:#4ade80;border-radius:1px;margin-top:-6px;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<style>button[data-testid="baseButton-secondary"][aria-label="FORECAST"]{{color:{fc_color}!important}}</style>', unsafe_allow_html=True)
-
-    with nav_cols[3]:
-        st.markdown('<p class="nav-item">FUNDERS</p>', unsafe_allow_html=True)
-
-    with nav_cols[4]:
-        an_color = "#4ade80" if page == "ANALYTICS" else "#64748b"
-        if st.button("ANALYTICS", key="btn_analytics"):
-            st.session_state.active_page = "ANALYTICS"
-            st.rerun()
-        if page == "ANALYTICS":
-            st.markdown('<div style="height:2px;background:#4ade80;border-radius:1px;margin-top:-6px;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<style>button[data-testid="baseButton-secondary"][aria-label="ANALYTICS"]{{color:{an_color}!important}}</style>', unsafe_allow_html=True)
-
-    with nav_cols[5]:
-        ab_color = "#4ade80" if page == "ABOUT" else "#64748b"
-        if st.button("ABOUT", key="btn_about"):
-            st.session_state.active_page = "ABOUT"
-            st.rerun()
-        if page == "ABOUT":
-            st.markdown('<div style="height:2px;background:#4ade80;border-radius:1px;margin-top:-6px;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<style>button[data-testid="baseButton-secondary"][aria-label="ABOUT"]{{color:{ab_color}!important}}</style>', unsafe_allow_html=True)
-
-    st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
-
-    # Page routing
-    if page == "ABOUT":
-        render_about_page()
-        return
-
-    if page == "FORECAST":
-        render_forecast_page()
-        return
-
-    if page == "ANALYTICS":
+    if page == 'home':
+        show_home_page()
+    elif page == 'dashboard':
+        show_dashboard_page()
+    elif page == 'analytics':
+        _render_inner_nav('analytics')
         render_analytics_page()
-        return
-
-    render_health_regions_page()
+    elif page == 'forecast':
+        _render_inner_nav('forecast')
+        render_forecast_page()
+    elif page == 'about':
+        _render_inner_nav('about')
+        render_about_page()
+    else:
+        show_home_page()
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 
-from styles import GLOBE_CSS
+from styles import get_globe_button_css
 
 
 def generate_sample_entities():
@@ -31,20 +31,67 @@ def generate_sample_entities():
     return pd.DataFrame(entities)
 
 
-def create_globe_html():
+def create_home_globe_html():
+    """Clean Earth globe for the home/landing page — no crisis markers."""
+    return """<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; overflow:hidden; background:transparent; }
+  #globeViz { width:100%; height:100%; }
+</style>
+</head>
+<body>
+<div id="globeViz"></div>
+<script src="https://unpkg.com/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
+<script>
+  const globe = Globe({ animateIn: true })
+    .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+    .backgroundColor('rgba(10,14,26,0)')
+    .showAtmosphere(false)
+    (document.getElementById('globeViz'));
+
+  globe.controls().autoRotate      = true;
+  globe.controls().autoRotateSpeed = 0.35;
+  globe.controls().enableZoom      = true;
+  globe.controls().minDistance     = 150;
+  globe.controls().maxDistance     = 700;
+  globe.pointOfView({ lat: 10, lng: 20, altitude: 1.8 }, 800);
+
+  const el = document.getElementById('globeViz');
+  el.addEventListener('mouseenter', () => { globe.controls().autoRotate = false; });
+  el.addEventListener('mouseleave', () => { globe.controls().autoRotate = true; });
+</script>
+</body>
+</html>"""
+
+
+def create_globe_html(theme_colors):
+    """Crisis globe with pulsing markers, region controls, and theme-aware styling."""
     severity_colors = {5: '#ef4444', 4: '#f59e0b', 3: '#3b82f6'}
-    entities = generate_sample_entities()
+    entities   = generate_sample_entities()
+    button_css = get_globe_button_css(theme_colors)
+
     js_data = ",\n      ".join(
         f'{{ lat:{row["lat"]}, lng:{row["lon"]}, name:"{row["name"]}", '
         f'hvi:{row["hvi"]}, fund:{row["fund"]}, sev:"{row["severity"]}", '
         f'color:"{severity_colors[row["severity"]]}", projects:{row["projects"]} }}'
         for _, row in entities.iterrows()
     )
-    globe_html = f"""<!DOCTYPE html>
+
+    return f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<style>{GLOBE_CSS}</style>
+<style>
+  * {{ margin:0; padding:0; box-sizing:border-box; }}
+  html, body {{ width:100%; height:100%; overflow:hidden; background:transparent; }}
+  #globeViz {{ width:100%; height:100%; }}
+{button_css}
+</style>
 </head>
 <body>
 <div id="globeViz"></div>
@@ -132,70 +179,3 @@ def create_globe_html():
 </script>
 </body>
 </html>"""
-    return globe_html
-
-
-def render_health_regions_page():
-    col1, col2 = st.columns([0.7, 3.5])
-
-    with col1:
-        col_filter1, col_filter2 = st.columns(2)
-
-        with col_filter1:
-            with st.expander("TYPES ▼", expanded=False):
-                st.markdown("""
-                <div style="color: #cbd5e1; font-size: 0.85rem;">
-                ◈ Health Crisis<br>
-                ◈ Nutrition Emergency<br>
-                ◈ Water Shortage<br>
-                ◈ Shelter Need<br>
-                ◈ Protection Required
-                </div>
-                """, unsafe_allow_html=True)
-
-        with col_filter2:
-            with st.expander("TARGETS ▼", expanded=False):
-                st.markdown("""
-                <div style="color: #cbd5e1; font-size: 0.85rem;">
-                ◈ All Regions<br>
-                ◈ Africa<br>
-                ◈ Middle East<br>
-                ◈ Asia<br>
-                ◈ Americas
-                </div>
-                """, unsafe_allow_html=True)
-
-        st.markdown("<div style='margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
-
-        entities       = generate_sample_entities()
-        total_entities = len(entities)
-
-        entity_items_html = ""
-        for _, entity in entities.iterrows():
-            entity_items_html += f'''<div class="entity-item">
-                <span class="entity-name">{entity['name']}</span>
-                <span class="entity-badge">{entity['projects']}</span>
-            </div>'''
-
-        st.markdown(f'''<div class="entity-list">
-            <div class="entity-header">
-                <span class="entity-count">{total_entities} CRISIS REGIONS</span>
-                <span class="sort-dropdown">A-Z ▼</span>
-            </div>
-            {entity_items_html}
-        </div>''', unsafe_allow_html=True)
-
-    with col2:
-        globe_html = create_globe_html()
-
-        st.markdown('''
-        <div style="position: absolute; top: 80px; right: 20px; z-index: 1000; text-align: right; max-width: 420px; pointer-events: none;">
-            <p style="color: #4ade80; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; margin: 0 0 8px 0; font-family: 'Courier New', monospace;">HUMANITARIAN HEALTH</p>
-            <h1 style="color: #ffffff; font-size: 2rem; font-weight: 300; margin: 0 0 12px 0; line-height: 1.1;">CRISIS REGIONS</h1>
-            <p style="color: #9ca3af; font-size: 0.85rem; line-height: 1.5; margin: 0;">
-            Global surveillance and spyware companies that develop technologies to collect user data, monitor communications, and capture biometrics, enabling governments and corporations to track individuals.
-            </p>
-        </div>
-        ''', unsafe_allow_html=True)
-
-        components.html(globe_html, height=800, scrolling=False)
